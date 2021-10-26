@@ -46,7 +46,7 @@
 
 .image-frame {
   z-index: 10;
-  background-color: black;
+  /* background-color: black; */
 }
 
 .lazy-load-view {
@@ -55,7 +55,6 @@
   justify-content: center;
   text-align: center;
 }
-
 
 .progress-icon {
   color: white;
