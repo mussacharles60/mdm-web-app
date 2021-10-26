@@ -27,6 +27,8 @@ export default class Main extends React.Component<
   private mainView: React.RefObject<HTMLDivElement> =
     React.createRef<HTMLDivElement>();
 
+  private imageElement: React.RefObject<HTMLImageElement> =
+    React.createRef<HTMLImageElement>();
   private canvas1: React.RefObject<HTMLCanvasElement> =
     React.createRef<HTMLCanvasElement>();
   private canvas2: React.RefObject<HTMLCanvasElement> =
@@ -147,37 +149,95 @@ export default class Main extends React.Component<
   }
 
   private async capture() {
-    const mtcnnParams: any = {
-      // number of scaled versions of the input image passed through the CNN
-      // of the first stage, lower numbers will result in lower inference time,
-      // but will also be less accurate
-      maxNumScales: 10,
-      // scale factor used to calculate the scale steps of the image
-      // pyramid used in stage 1
-      scaleFactor: 0.709,
-      // the score threshold values used to filter the bounding
-      // boxes of stage 1, 2 and 3
-      scoreThresholds: [0.6, 0.7, 0.7],
-      // mininum face size to expect, the higher the faster processing will be,
-      // but smaller faces won't be detected
-      minFaceSize: 20,
-    };
-    const videoInput = document.getElementById("video-input");
-    if (this.webcam && this.webcam.current && videoInput) {
+    if (!this.didMount) return;
+    // const mtcnnParams: any = {
+    //   // number of scaled versions of the input image passed through the CNN
+    //   // of the first stage, lower numbers will result in lower inference time,
+    //   // but will also be less accurate
+    //   maxNumScales: 10,
+    //   // scale factor used to calculate the scale steps of the image
+    //   // pyramid used in stage 1
+    //   scaleFactor: 0.709,
+    //   // the score threshold values used to filter the bounding
+    //   // boxes of stage 1, 2 and 3
+    //   scoreThresholds: [0.6, 0.7, 0.7],
+    //   // mininum face size to expect, the higher the faster processing will be,
+    //   // but smaller faces won't be detected
+    //   minFaceSize: 20,
+    // };
+    // const videoInput = document.getElementById("video-input");
+
+    if (
+      this.webcam.current &&
+      this.imageElement.current &&
+      this.canvas1.current &&
+      this.canvas2.current
+    ) {
+      const imageSrc = this.webcam.current.getScreenshot();
+
+      this.imageElement.current.onload = async () => {
+        if (!this.didMount) return;
+        if (
+          this.webcam.current &&
+          this.imageElement.current &&
+          this.canvas1.current &&
+          this.canvas2.current
+        ) {
+          this.canvas1.current.width = (
+            this.webcam.current as any
+          ).getBoundingClientRect().width;
+          this.canvas1.current.height = (
+            this.webcam.current as any
+          ).getBoundingClientRect().height;
+          this.canvas2.current.width = (
+            this.webcam.current as any
+          ).getBoundingClientRect().width;
+          this.canvas2.current.height = (
+            this.webcam.current as any
+          ).getBoundingClientRect().height;
+          const ctx = this.canvas1.current.getContext("2d");
+
+          if (ctx)
+            ctx.drawImage(
+              this.imageElement.current as HTMLImageElement,
+              0,
+              0,
+              this.canvas1.current.width,
+              this.canvas1.current.height
+            );
+          const ctx_up = this.canvas2.current.getContext("2d");
+          if (ctx_up)
+            ctx_up.clearRect(
+              0,
+              0,
+              this.canvas2.current.width,
+              this.canvas2.current.height
+            );
+
+          const detectionResult = await faceapi
+            .detectAllFaces(this.canvas1.current)
+            .withFaceLandmarks()
+            .withFaceExpressions()
+            .withAgeAndGender()
+            .withFaceDescriptors();
+        }
+        if (imageSrc) this.setState({ input_image: imageSrc });
+      };
+
       // const imageSrc = this.webcam.current.getScreenshot();
 
-      const mtcnnResults = await faceapi.mtcnn(
-        videoInput as any,
-        mtcnnParams
-        //    {
-        //   minFaceSize: 20,
-        //   scaleFactor: 0.709,
-        //   maxNumScales: 10,
-        //   scoreThresholds: [0.6, 0.7, 0.7],
-        // }
-      );
+      // const mtcnnResults = await faceapi.mtcnn(
+      //   videoInput as any,
+      //   mtcnnParams
+      //   //    {
+      //   //   minFaceSize: 20,
+      //   //   scaleFactor: 0.709,
+      //   //   maxNumScales: 10,
+      //   //   scoreThresholds: [0.6, 0.7, 0.7],
+      //   // }
+      // );
 
-      console.log(mtcnnResults);
+      // console.log(mtcnnResults);
 
       // minFaceSize?: number;
       // scaleFactor?: number;
@@ -232,9 +292,15 @@ export default class Main extends React.Component<
             />
           )}
           <div
-            className="image-frame"
+            className="output-lay"
             style={{ display: this.state.show_canvas ? "flex" : "none" }}
           >
+            <img
+              className="image"
+              src={this.state.input_image}
+              ref={this.imageElement}
+              alt={"..."}
+            />
             <canvas className="canvas" ref={this.canvas1} />
             <canvas className="canvas canvas-output" ref={this.canvas2} />
           </div>
