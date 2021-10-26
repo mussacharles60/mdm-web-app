@@ -341,26 +341,28 @@ export default class Main extends React.Component<
             className="output-lay"
             // style={{ display: this.state.show_canvas ? "flex" : "none" }}
           >
-            <img
-              className={"image-input"}
-              src={this.state.input_image}
-              ref={this.imageElement}
-              alt={"..."}
-              hidden={true}
-            />
-            <canvas className="canvas-input" ref={this.canvas1} />
-            <canvas className="canvas-output" ref={this.canvas2} />
-          </div>
-          {this.state.is_initializing && !this.state.has_media_stream && (
-            <div className="lazy-load-view">
-              <i
-                className="las la-spinner la-spin progress-icon"
-                // style={{
-                //   display: this.state.is_initializing ? "flex" : "none",
-                // }}
-              ></i>
+            <div className="output-cont">
+              <img
+                className={"image-input"}
+                src={this.state.input_image}
+                ref={this.imageElement}
+                alt={"..."}
+                hidden={true}
+              />
+              <canvas className="canvas-input" ref={this.canvas1} />
+              <canvas className="canvas-output" ref={this.canvas2} />
             </div>
-          )}
+            {this.state.is_initializing && !this.state.has_media_stream && (
+              <div className="lazy-load-view">
+                <i
+                  className="las la-spinner la-spin progress-icon"
+                  // style={{
+                  //   display: this.state.is_initializing ? "flex" : "none",
+                  // }}
+                ></i>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     );
