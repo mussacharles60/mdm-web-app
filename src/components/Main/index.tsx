@@ -169,6 +169,18 @@ export default class Main extends React.Component<
             }}
           />
           {/* <button onClick={capture}>Capture photo</button> */}
+          <div className="image-frame">
+            <canvas className="img-input" id="canvas" />
+            <canvas className="img-input canvas-output" id="canvas-output" />
+          </div>
+          <div className="lazy-load-view">
+            <i
+              className="las la-spinner la-spin progress-icon"
+              style={{
+                display: this.state.is_initializing ? "flex" : "none",
+              }}
+            ></i>
+          </div>
         </div>
       </div>
     );

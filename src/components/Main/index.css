@@ -16,6 +16,8 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  position: relative;
+  z-index: 0;
   /* background-color: rgb(8, 138, 12); */
 }
 
@@ -26,3 +28,29 @@
 /* video {
     height: 100vh;
   } */
+
+.image-frame,
+.lazy-load-view {
+  width: inherit;
+  height: inherit;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 10;
+  background-color: black;
+}
+
+.image-frame {
+  z-index: 10;
+  background-color: black;
+}
+
+.lazy-load-view {
+  z-index: 20;
+  background-color: black;
+}
