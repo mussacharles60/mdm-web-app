@@ -215,7 +215,7 @@ export default class Main extends React.Component<
                   } catch (error) {
                     console.log(error);
                   }
-                }, 1500);
+                }, 1000);
                 this.capture();
               }}
               onUserMediaError={() => {
@@ -227,7 +227,7 @@ export default class Main extends React.Component<
                   } catch (error) {
                     console.log(error);
                   }
-                }, 1500);
+                }, 1000);
               }}
             />
           )}
