@@ -339,13 +339,14 @@ export default class Main extends React.Component<
           )}
           <div
             className="output-lay"
-            style={{ display: this.state.show_canvas ? "flex" : "none" }}
+            // style={{ display: this.state.show_canvas ? "flex" : "none" }}
           >
             <img
-              className="image-input"
+              className={"image-input"}
               src={this.state.input_image}
               ref={this.imageElement}
               alt={"..."}
+              hidden={true}
             />
             <canvas className="canvas-input" ref={this.canvas1} />
             <canvas className="canvas-output" ref={this.canvas2} />
