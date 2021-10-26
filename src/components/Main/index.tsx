@@ -65,16 +65,16 @@ export default class Main extends React.Component<
     }
     try {
       (window as any).MdmAndroid.onInitializationBegin();
-    } catch (e) {
-      console.log(e);
+    } catch (_e) {
+      // console.log(e);
     }
     await this.loadModels();
     // console.log(faceapi.nets);
     this.setState({ is_initializing: false });
     try {
       (window as any).MdmAndroid.onInitializationCompleted();
-    } catch (e) {
-      console.log(e);
+    } catch (_e) {
+      // console.log(e);
     }
   }
 
@@ -166,35 +166,35 @@ export default class Main extends React.Component<
     //   minFaceSize: 20,
     // };
     // const videoInput = document.getElementById("video-input");
-
+    console.log("capture: called");
     if (
       this.webcam.current &&
       this.imageElement.current &&
       this.canvas1.current &&
       this.canvas2.current
     ) {
+      console.log("capture: passed 1");
       const imageSrc = this.webcam.current.getScreenshot();
 
       this.imageElement.current.onload = async () => {
         if (!this.didMount) return;
         if (
           this.webcam.current &&
+          this.webcam.current.video &&
           this.imageElement.current &&
           this.canvas1.current &&
           this.canvas2.current
         ) {
-          this.canvas1.current.width = (
-            this.webcam.current as any
-          ).getBoundingClientRect().width;
-          this.canvas1.current.height = (
-            this.webcam.current as any
-          ).getBoundingClientRect().height;
-          this.canvas2.current.width = (
-            this.webcam.current as any
-          ).getBoundingClientRect().width;
-          this.canvas2.current.height = (
-            this.webcam.current as any
-          ).getBoundingClientRect().height;
+          this.setState({ show_canvas: true });
+          console.log("capture: passed 2");
+          this.canvas1.current.width =
+            this.webcam.current.video.getBoundingClientRect().width;
+          this.canvas1.current.height =
+            this.webcam.current.video.getBoundingClientRect().height;
+          this.canvas2.current.width =
+            this.webcam.current.video.getBoundingClientRect().width;
+          this.canvas2.current.height =
+            this.webcam.current.video.getBoundingClientRect().height;
           const ctx = this.canvas1.current.getContext("2d");
 
           if (ctx)
@@ -220,9 +220,51 @@ export default class Main extends React.Component<
             .withFaceExpressions()
             .withAgeAndGender()
             .withFaceDescriptors();
+
+          console.log("detectionResult: ", detectionResult);
+          if (detectionResult && detectionResult.length) {
+            if (!this.didMount) return;
+            const displaySize = {
+              width: this.canvas1.current.width,
+              height: this.canvas1.current.height,
+            };
+            faceapi.matchDimensions(this.canvas2.current, displaySize);
+            const resizedDetections = faceapi.resizeResults(
+              detectionResult,
+              displaySize
+            );
+            faceapi.draw.drawDetections(
+              this.canvas2.current,
+              resizedDetections
+            );
+            faceapi.draw.drawFaceLandmarks(
+              this.canvas2.current,
+              resizedDetections
+            );
+            const minProbability = 0.05;
+            faceapi.draw.drawFaceExpressions(
+              this.canvas2.current,
+              resizedDetections,
+              minProbability
+            );
+            // const descriptor = singleResult[0];
+            const faceMatcher = new faceapi.FaceMatcher(detectionResult);
+            // const bestMatch = faceMatcher.findBestMatch(singleResult.descriptor);
+            console.log("faceMatcher: ", faceMatcher); //output
+            detectionResult.forEach((fd) => {
+              const bestMatch = faceMatcher.findBestMatch(fd.descriptor);
+
+              console.log("bestMatch: ", bestMatch.toString());
+            });
+            this.setState({ show_canvas: false });
+            this.capture();
+          }
         }
-        if (imageSrc) this.setState({ input_image: imageSrc });
       };
+      if (imageSrc) {
+        // console.log("capture: imageSrc: " + imageSrc);
+        this.setState({ input_image: imageSrc });
+      } else console.log("capture: imageSrc: null");
 
       // const imageSrc = this.webcam.current.getScreenshot();
 
@@ -272,11 +314,11 @@ export default class Main extends React.Component<
                   this.setState({ has_media_stream: true });
                   try {
                     (window as any).MdmAndroid.onCameraReady();
-                  } catch (error) {
-                    console.log(error);
+                    this.capture();
+                  } catch (_error) {
+                    // console.log(error);
                   }
                 }, 1000);
-                this.capture();
               }}
               onUserMediaError={() => {
                 setTimeout(() => {
@@ -284,8 +326,8 @@ export default class Main extends React.Component<
                   this.setState({ has_media_stream: false });
                   try {
                     (window as any).MdmAndroid.onCameraFailed();
-                  } catch (error) {
-                    console.log(error);
+                  } catch (_error) {
+                    // console.log(error);
                   }
                 }, 1000);
               }}
@@ -296,13 +338,13 @@ export default class Main extends React.Component<
             style={{ display: this.state.show_canvas ? "flex" : "none" }}
           >
             <img
-              className="image"
+              className="image-input"
               src={this.state.input_image}
               ref={this.imageElement}
               alt={"..."}
             />
-            <canvas className="canvas" ref={this.canvas1} />
-            <canvas className="canvas canvas-output" ref={this.canvas2} />
+            <canvas className="canvas-input" ref={this.canvas1} />
+            <canvas className="canvas-output" ref={this.canvas2} />
           </div>
           {this.state.is_initializing && !this.state.has_media_stream && (
             <div className="lazy-load-view">

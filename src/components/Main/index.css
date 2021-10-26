@@ -30,7 +30,7 @@
     height: 100vh;
   } */
 
-.image-frame,
+.output-lay,
 .lazy-load-view {
   width: inherit;
   height: inherit;
@@ -44,9 +44,31 @@
   left: 0;
 }
 
-.image-frame {
+.output-lay {
   z-index: 10;
   /* background-color: black; */
+}
+
+.output-lay img,
+.output-lay canvas {
+  width: 100%;
+  height: 100%;
+}
+
+.output-lay canvas {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+
+.output-lay .canvas-input {
+  z-index: 1;
+}
+
+.output-lay .canvas-output {
+  z-index: 2;
 }
 
 .lazy-load-view {
