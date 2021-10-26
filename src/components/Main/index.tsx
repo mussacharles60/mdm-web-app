@@ -16,6 +16,7 @@ export default class Main extends React.Component<
 
     is_initializing: boolean;
     is_running_process: boolean;
+    has_media_stream: boolean;
     videoWidth: number;
     videoHeight: number;
   }
@@ -34,6 +35,7 @@ export default class Main extends React.Component<
       input_image: "",
       is_initializing: true,
       is_running_process: false,
+      has_media_stream: false,
       videoWidth: 200,
       videoHeight: 700,
     };
@@ -158,6 +160,7 @@ export default class Main extends React.Component<
           <Webcam
             className="webcam-view"
             audio={false}
+            mirrored={true}
             width={"100%"}
             height={"100%"}
             ref={this.webcam}
@@ -167,20 +170,28 @@ export default class Main extends React.Component<
               // height: this.state.videoHeight,
               facingMode: "user",
             }}
+            onUserMedia={() => {
+              this.setState({ has_media_stream: true });
+            }}
+            onUserMediaError={() => {
+              this.setState({ has_media_stream: false });
+            }}
           />
           {/* <button onClick={capture}>Capture photo</button> */}
-          <div className="image-frame">
+          {/* <div className="image-frame">
             <canvas className="img-input" id="canvas" />
             <canvas className="img-input canvas-output" id="canvas-output" />
-          </div>
-          <div className="lazy-load-view">
-            <i
-              className="las la-spinner la-spin progress-icon"
-              style={{
-                display: this.state.is_initializing ? "flex" : "none",
-              }}
-            ></i>
-          </div>
+          </div> */}
+          {this.state.is_initializing && !this.state.has_media_stream && (
+            <div className="lazy-load-view">
+              <i
+                className="las la-spinner la-spin progress-icon"
+                // style={{
+                //   display: this.state.is_initializing ? "flex" : "none",
+                // }}
+              ></i>
+            </div>
+          )}
         </div>
       </div>
     );

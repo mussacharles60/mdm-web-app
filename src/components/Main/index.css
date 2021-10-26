@@ -3,6 +3,7 @@
   height: 100vh;
   display: flex;
   flex-direction: column;
+  background-color: black;
   /* background-color: var(--color-bg); */
   /* background-color: rgb(8, 103, 138); */
   justify-content: center;
@@ -41,8 +42,6 @@
   right: 0;
   bottom: 0;
   left: 0;
-  z-index: 10;
-  background-color: black;
 }
 
 .image-frame {
@@ -53,4 +52,14 @@
 .lazy-load-view {
   z-index: 20;
   background-color: black;
+  justify-content: center;
+  text-align: center;
+}
+
+
+.progress-icon {
+  color: white;
+  font-size: 50px;
+  display: inline-block;
+  position: relative;
 }
