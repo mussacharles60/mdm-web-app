@@ -166,14 +166,14 @@ export default class Main extends React.Component<
     //   minFaceSize: 20,
     // };
     // const videoInput = document.getElementById("video-input");
-    console.log("capture: called");
+    // console.log("capture: called");
     if (
       this.webcam.current &&
       this.imageElement.current &&
       this.canvas1.current &&
       this.canvas2.current
     ) {
-      console.log("capture: passed 1");
+      // console.log("capture: passed 1");
       const imageSrc = this.webcam.current.getScreenshot();
 
       this.imageElement.current.onload = async () => {
@@ -186,7 +186,6 @@ export default class Main extends React.Component<
           this.canvas2.current
         ) {
           this.setState({ show_canvas: true });
-          console.log("capture: passed 2");
           this.canvas1.current.width =
             this.webcam.current.video.getBoundingClientRect().width;
           this.canvas1.current.height =
@@ -258,11 +257,14 @@ export default class Main extends React.Component<
             });
             this.setState({ show_canvas: false });
             this.capture();
+          } else {
+            this.setState({ show_canvas: false });
+            this.capture();
           }
         }
       };
       if (imageSrc) {
-        // console.log("capture: imageSrc: " + imageSrc);
+        // console.log("capture: imageSrc: found");
         this.setState({ input_image: imageSrc });
       } else console.log("capture: imageSrc: null");
 
@@ -314,10 +316,11 @@ export default class Main extends React.Component<
                   this.setState({ has_media_stream: true });
                   try {
                     (window as any).MdmAndroid.onCameraReady();
-                    this.capture();
-                  } catch (_error) {
+                  } catch (error) {
                     // console.log(error);
                   }
+                  console.log("capture: onCameraReady");
+                  this.capture();
                 }, 1000);
               }}
               onUserMediaError={() => {
@@ -326,9 +329,10 @@ export default class Main extends React.Component<
                   this.setState({ has_media_stream: false });
                   try {
                     (window as any).MdmAndroid.onCameraFailed();
-                  } catch (_error) {
+                  } catch (error) {
                     // console.log(error);
                   }
+                  console.log("capture: onCameraFailed");
                 }, 1000);
               }}
             />
